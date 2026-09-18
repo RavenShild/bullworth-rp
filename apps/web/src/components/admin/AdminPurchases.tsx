@@ -2,135 +2,241 @@ import {
   Coins,
   ShoppingBag,
 } from 'lucide-react'
-import type { Purchase } from './types'
+
+import type {
+  Purchase,
+} from './types'
 
 type Props = {
   purchases: Purchase[]
   loading: boolean
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat(
-    'pt-BR',
-    {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }
-  ).format(new Date(value))
+function formatDate(
+  value: string
+) {
+  return new Intl
+    .DateTimeFormat(
+      'pt-BR',
+      {
+        day:
+          '2-digit',
+
+        month:
+          '2-digit',
+
+        year:
+          'numeric',
+
+        hour:
+          '2-digit',
+
+        minute:
+          '2-digit',
+      }
+    )
+    .format(
+      new Date(value)
+    )
+}
+
+function statusLabel(
+  status: string
+) {
+  if (
+    status ===
+    'COMPLETED'
+  ) {
+    return 'Concluída'
+  }
+
+  if (
+    status ===
+    'PENDING'
+  ) {
+    return 'Pendente'
+  }
+
+  if (
+    status ===
+    'CANCELLED'
+  ) {
+    return 'Cancelada'
+  }
+
+  return status
 }
 
 export function AdminPurchases({
   purchases,
   loading,
 }: Props) {
-  if (loading) {
-    return (
-      <section className="paper-card admin-section">
-        <p>Carregando compras...</p>
-      </section>
-    )
-  }
-
   return (
-    <section className="paper-card admin-section">
-      <div className="admin-section-heading">
+    <section className="admin-audit-panel">
+
+      <header className="admin-audit-header">
+
         <div>
           <p className="eyebrow">
-            LOJA
+            SCHOOL STORE
           </p>
 
           <h2>
             Histórico de compras
           </h2>
-        </div>
-
-        <ShoppingBag size={24} />
-      </div>
-
-      {purchases.length === 0 ? (
-        <div className="admin-empty">
-          <ShoppingBag size={40} />
 
           <p>
-            Nenhuma compra registrada.
+            Registro das aquisições
+            realizadas pelos alunos.
+          </p>
+        </div>
+
+        <div className="admin-audit-header-icon">
+          <ShoppingBag
+            size={23}
+          />
+        </div>
+
+      </header>
+
+      {loading ? (
+        <div className="admin-audit-state">
+          Carregando compras...
+        </div>
+      ) : purchases.length ===
+        0 ? (
+        <div className="admin-audit-empty">
+          <ShoppingBag
+            size={36}
+          />
+
+          <strong>
+            Nenhuma compra registrada
+          </strong>
+
+          <p>
+            As compras efetuadas
+            na Bullworth Store
+            aparecerão aqui.
           </p>
         </div>
       ) : (
-        <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Jogador</th>
-                <th>Produto</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Data</th>
-              </tr>
-            </thead>
+        <div className="admin-purchase-list">
 
-            <tbody>
-              {purchases.map((purchase) => (
-                <tr key={purchase.id}>
-                  <td>
-                    <div className="table-user">
-                      {purchase.user.avatar ? (
-                        <img
-                          src={purchase.user.avatar}
-                          alt={purchase.user.username}
-                        />
-                      ) : (
-                        <div className="table-avatar-placeholder">
-                          {purchase.user.username
-                            .charAt(0)
-                            .toUpperCase()}
-                        </div>
-                      )}
+          <div className="admin-purchase-columns">
+            <span>
+              Jogador
+            </span>
 
-                      <span>
-                        {purchase.user.username}
-                      </span>
+            <span>
+              Produto
+            </span>
+
+            <span>
+              Valor
+            </span>
+
+            <span>
+              Status
+            </span>
+
+            <span>
+              Data
+            </span>
+          </div>
+
+          {purchases.map(
+            (
+              purchase
+            ) => (
+              <article
+                className="admin-purchase-row"
+                key={
+                  purchase.id
+                }
+              >
+
+                <div className="admin-purchase-user">
+                  {purchase.user.avatar ? (
+                    <img
+                      src={
+                        purchase.user.avatar
+                      }
+                      alt={
+                        purchase.user.username
+                      }
+                    />
+                  ) : (
+                    <div className="admin-purchase-avatar-placeholder">
+                      {purchase.user.username
+                        .charAt(0)
+                        .toUpperCase()}
                     </div>
-                  </td>
+                  )}
 
-                  <td>
-                    {purchase.product.name}
-                  </td>
+                  <div>
+                    <strong>
+                      {
+                        purchase.user
+                          .username
+                      }
+                    </strong>
 
-                  <td>
-                    <div className="table-points">
-                      <Coins size={15} />
+                    <small>
+                      ID{' '}
+                      {
+                        purchase.user
+                          .discordId
+                      }
+                    </small>
+                  </div>
+                </div>
 
-                      {purchase.price.toLocaleString(
-                        'pt-BR'
-                      )}{' '}
-                      BP
-                    </div>
-                  </td>
+                <div className="admin-purchase-product">
+                  <strong>
+                    {
+                      purchase.product
+                        .name
+                    }
+                  </strong>
+                </div>
 
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        purchase.status.toLowerCase()
-                      }`}
-                    >
-                      {purchase.status}
-                    </span>
-                  </td>
+                <div className="admin-purchase-value">
+                  <Coins
+                    size={15}
+                  />
 
-                  <td>
-                    {formatDate(
-                      purchase.createdAt
+                  <strong>
+                    {purchase.price.toLocaleString(
+                      'pt-BR'
+                    )}{' '}
+                    BP
+                  </strong>
+                </div>
+
+                <div>
+                  <span
+                    className={`admin-status-badge ${purchase.status.toLowerCase()}`}
+                  >
+                    {statusLabel(
+                      purchase.status
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </span>
+                </div>
+
+                <time className="admin-purchase-date">
+                  {formatDate(
+                    purchase.createdAt
+                  )}
+                </time>
+
+              </article>
+            )
+          )}
+
         </div>
       )}
+
     </section>
   )
 }

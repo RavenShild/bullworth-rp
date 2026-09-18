@@ -1,7 +1,9 @@
 import {
   Coins,
   LockKeyhole,
+  PackageOpen,
   ShoppingBag,
+  Store,
   X,
 } from 'lucide-react'
 
@@ -239,10 +241,7 @@ export function ShopPage() {
             : current
       )
 
-      setSelectedProduct(
-        null
-      )
-
+      setSelectedProduct(null)
       setErrorMessage(null)
 
       showToast(
@@ -271,33 +270,46 @@ export function ShopPage() {
     user === undefined
   ) {
     return (
-      <main className="page">
-        <p>
-          Carregando...
-        </p>
+      <main className="school-store-page">
+        <div className="store-loading">
+          <div className="store-loading-icon">
+            <ShoppingBag
+              size={30}
+            />
+          </div>
+
+          <p>
+            Abrindo a Bullworth Store...
+          </p>
+        </div>
       </main>
     )
   }
 
   if (!user) {
     return (
-      <main className="page centered">
-        <div className="locked-card paper-card">
-          <LockKeyhole
-            size={42}
-          />
+      <main className="school-store-page store-centered">
+        <section className="store-login-panel">
+          <div className="store-login-icon">
+            <LockKeyhole
+              size={34}
+            />
+          </div>
+
+          <p className="eyebrow">
+            BULLWORTH STORE
+          </p>
 
           <h1>
-            Área exclusiva
-            para alunos
+            School Store
           </h1>
 
           <p>
-            Entre com sua conta
-            do Discord. O sistema
-            verificará se você
-            pertence ao servidor
-            do RP.
+            A loja é exclusiva
+            para membros da academia.
+            Entre com sua conta do Discord
+            para consultar seu saldo
+            e adquirir itens.
           </p>
 
           <a
@@ -306,186 +318,291 @@ export function ShopPage() {
           >
             Entrar com Discord
           </a>
-        </div>
+        </section>
       </main>
     )
   }
 
   return (
-    <main className="page">
-      <div className="page-heading shop-heading">
-        <div>
+    <main className="school-store-page">
+
+      <section className="store-hero">
+
+        <div className="store-hero-copy">
           <p className="eyebrow">
-            BULLWORTH STORE
+            BULLWORTH ACADEMY
           </p>
 
           <h1>
-            Loja de
-            Bully Points
+            School Store
           </h1>
 
-          <p className="shop-subtitle">
-            Use seus Bully
-            Points para adquirir
-            itens e benefícios
-            dentro do RP.
+          <p>
+            Benefícios, permissões
+            e itens especiais para
+            sua experiência dentro
+            de Bullworth.
           </p>
         </div>
 
-        <div className="balance">
-          <Coins
-            size={18}
-          />
+        <div className="store-wallet">
+          <div className="store-wallet-icon">
+            <Coins
+              size={24}
+            />
+          </div>
 
-          <span>
-            Saldo
-          </span>
+          <div>
+            <span>
+              Saldo disponível
+            </span>
 
-          <strong>
-            {user.bullyPoints.toLocaleString(
-              'pt-BR'
-            )}{' '}
-            BP
-          </strong>
+            <strong>
+              {user.bullyPoints.toLocaleString(
+                'pt-BR'
+              )}{' '}
+              BP
+            </strong>
+          </div>
         </div>
+
+      </section>
+
+      <div className="store-divider">
+        <span />
+        <strong>
+          BULLWORTH STORE
+        </strong>
+        <span />
       </div>
 
-      {loadingProducts ? (
-        <div className="paper-card shop-loading">
-          Carregando produtos...
+      <section className="store-catalog">
+
+        <div className="store-catalog-heading">
+          <div>
+            <p className="eyebrow">
+              SCHOOL CATALOG
+            </p>
+
+            <h2>
+              Itens disponíveis
+            </h2>
+          </div>
+
+          <div className="store-catalog-count">
+            <Store
+              size={18}
+            />
+
+            <span>
+              {products.length}{' '}
+              {products.length === 1
+                ? 'item'
+                : 'itens'}
+            </span>
+          </div>
         </div>
-      ) : products.length ===
-        0 ? (
-        <div className="empty paper-card">
-          <ShoppingBag
-            size={38}
-          />
+
+        {loadingProducts ? (
+          <div className="store-state-panel">
+            <ShoppingBag
+              size={34}
+            />
+
+            <strong>
+              Carregando catálogo
+            </strong>
+
+            <p>
+              Consultando itens disponíveis...
+            </p>
+          </div>
+        ) : products.length ===
+          0 ? (
+          <div className="store-state-panel">
+            <PackageOpen
+              size={38}
+            />
+
+            <strong>
+              Loja temporariamente vazia
+            </strong>
+
+            <p>
+              Assim que novos itens forem
+              disponibilizados pela direção,
+              eles aparecerão aqui.
+            </p>
+          </div>
+        ) : (
+          <div className="store-product-grid">
+            {products.map(
+              (product) => {
+                const outOfStock =
+                  product.stock !==
+                    null &&
+                  product.stock <=
+                    0
+
+                const insufficientBalance =
+                  user.bullyPoints <
+                  product.price
+
+                return (
+                  <article
+                    className={`store-product-card ${
+                      outOfStock
+                        ? 'is-sold-out'
+                        : ''
+                    }`}
+                    key={
+                      product.id
+                    }
+                  >
+                    <div className="store-product-image">
+                      {product.imageUrl ? (
+                        <img
+                          src={
+                            product.imageUrl
+                          }
+                          alt={
+                            product.name
+                          }
+                        />
+                      ) : (
+                        <div className="store-product-placeholder">
+                          <ShoppingBag
+                            size={40}
+                          />
+                        </div>
+                      )}
+
+                      <div className="store-product-number">
+                        #{String(
+                          product.id
+                        ).padStart(
+                          3,
+                          '0'
+                        )}
+                      </div>
+
+                      {outOfStock && (
+                        <span className="store-sold-out-badge">
+                          ESGOTADO
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="store-product-body">
+
+                      <div className="store-product-title">
+                        <span>
+                          SCHOOL STORE ITEM
+                        </span>
+
+                        <h3>
+                          {product.name}
+                        </h3>
+                      </div>
+
+                      <p>
+                        {product.description}
+                      </p>
+
+                      <div className="store-product-meta">
+                        <span>
+                          Disponibilidade
+                        </span>
+
+                        <strong>
+                          {product.stock ===
+                          null
+                            ? 'Ilimitada'
+                            : product.stock ===
+                                0
+                              ? 'Indisponível'
+                              : `${product.stock} ${
+                                  product.stock ===
+                                  1
+                                    ? 'unidade'
+                                    : 'unidades'
+                                }`}
+                        </strong>
+                      </div>
+
+                    </div>
+
+                    <footer className="store-product-footer">
+
+                      <div className="store-product-price">
+                        <Coins
+                          size={18}
+                        />
+
+                        <strong>
+                          {product.price.toLocaleString(
+                            'pt-BR'
+                          )}{' '}
+                          BP
+                        </strong>
+                      </div>
+
+                      <button
+                        className="btn primary"
+                        type="button"
+                        disabled={
+                          outOfStock ||
+                          insufficientBalance
+                        }
+                        onClick={() =>
+                          openPurchase(
+                            product
+                          )
+                        }
+                      >
+                        {outOfStock
+                          ? 'Esgotado'
+                          : insufficientBalance
+                            ? 'Saldo insuficiente'
+                            : 'Adquirir'}
+                      </button>
+
+                    </footer>
+                  </article>
+                )
+              }
+            )}
+          </div>
+        )}
+
+      </section>
+
+      <section className="store-policy">
+          <div className="brand-mark">
+            <img
+              src="https://media.discordapp.net/attachments/1519195029640318996/1550602565979218020/ICONERPG.png?ex=6aaeeeac&is=6aad9d2c&hm=b40b48cb33071ee5201c044f5a83689d8e6ace3e5966cedef27761af7651b9a1&=&format=webp&quality=lossless"
+              alt="Bullworth Academy"
+              className="brand-mark-image"
+            />
+          </div>
+
+        <div>
+          <span>
+            BULLWORTH ACADEMY
+          </span>
 
           <h3>
-            Nenhum produto
-            disponível
+            Student Store Policy
           </h3>
 
           <p>
-            Assim que a
-            administração
-            cadastrar itens,
-            eles aparecerão aqui.
+            Compras realizadas com
+            Bully Points são registradas
+            automaticamente no histórico
+            do aluno.
           </p>
         </div>
-      ) : (
-        <div className="product-grid">
-          {products.map(
-            (product) => {
-              const outOfStock =
-                product.stock !==
-                  null &&
-                product.stock <=
-                  0
-
-              const insufficientBalance =
-                user.bullyPoints <
-                product.price
-
-              return (
-                <article
-                  className="product-card paper-card"
-                  key={
-                    product.id
-                  }
-                >
-                  <div className="product-image">
-                    {product.imageUrl ? (
-                      <img
-                        src={
-                          product.imageUrl
-                        }
-                        alt={
-                          product.name
-                        }
-                      />
-                    ) : (
-                      <ShoppingBag
-                        size={38}
-                      />
-                    )}
-
-                    {outOfStock && (
-                      <span className="stock-badge sold-out">
-                        ESGOTADO
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="product-card-content">
-                    <h3>
-                      {
-                        product.name
-                      }
-                    </h3>
-
-                    <p>
-                      {
-                        product.description
-                      }
-                    </p>
-
-                    <div className="product-stock">
-                      {product.stock ===
-                      null
-                        ? 'Disponibilidade ilimitada'
-                        : product.stock ===
-                            0
-                          ? 'Sem unidades disponíveis'
-                          : `${product.stock} ${
-                              product.stock ===
-                              1
-                                ? 'unidade disponível'
-                                : 'unidades disponíveis'
-                            }`}
-                    </div>
-                  </div>
-
-                  <div className="product-footer">
-                    <div className="product-price">
-                      <Coins
-                        size={17}
-                      />
-
-                      <strong>
-                        {product.price.toLocaleString(
-                          'pt-BR'
-                        )}{' '}
-                        BP
-                      </strong>
-                    </div>
-
-                    <button
-                      className="btn primary"
-                      type="button"
-                      disabled={
-                        outOfStock ||
-                        insufficientBalance
-                      }
-                      onClick={() =>
-                        openPurchase(
-                          product
-                        )
-                      }
-                    >
-                      {outOfStock
-                        ? 'Esgotado'
-                        : insufficientBalance
-                          ? 'Saldo insuficiente'
-                          : 'Comprar'}
-                    </button>
-                  </div>
-                </article>
-              )
-            }
-          )}
-        </div>
-      )}
+      </section>
 
       {selectedProduct && (
         <div
@@ -495,24 +612,22 @@ export function ShopPage() {
           }
         >
           <div
-            className="purchase-modal paper-card"
+            className="store-purchase-modal"
             onMouseDown={(
               event
             ) =>
               event.stopPropagation()
             }
           >
-            <div className="purchase-modal-header">
+
+            <header className="store-purchase-header">
               <div>
                 <p className="eyebrow">
-                  CONFIRMAR
-                  COMPRA
+                  PURCHASE REQUEST
                 </p>
 
                 <h2>
-                  {
-                    selectedProduct.name
-                  }
+                  Confirmar aquisição
                 </h2>
               </div>
 
@@ -527,33 +642,53 @@ export function ShopPage() {
                 }
               >
                 <X
-                  size={22}
+                  size={21}
                 />
               </button>
-            </div>
+            </header>
 
-            {selectedProduct.imageUrl && (
-              <img
-                className="purchase-product-image"
-                src={
-                  selectedProduct.imageUrl
-                }
-                alt={
-                  selectedProduct.name
-                }
-              />
-            )}
+            <div className="store-purchase-product">
 
-            <p className="purchase-description">
-              {
-                selectedProduct.description
-              }
-            </p>
+              <div className="store-purchase-image">
+                {selectedProduct.imageUrl ? (
+                  <img
+                    src={
+                      selectedProduct.imageUrl
+                    }
+                    alt={
+                      selectedProduct.name
+                    }
+                  />
+                ) : (
+                  <ShoppingBag
+                    size={34}
+                  />
+                )}
+              </div>
 
-            <div className="purchase-summary">
               <div>
                 <span>
-                  Seu saldo
+                  ITEM
+                </span>
+
+                <h3>
+                  {selectedProduct.name}
+                </h3>
+
+                <p>
+                  {
+                    selectedProduct.description
+                  }
+                </p>
+              </div>
+
+            </div>
+
+            <div className="store-purchase-ledger">
+
+              <div>
+                <span>
+                  Saldo atual
                 </span>
 
                 <strong>
@@ -566,11 +701,11 @@ export function ShopPage() {
 
               <div>
                 <span>
-                  Valor
+                  Valor do item
                 </span>
 
-                <strong>
-                  -{' '}
+                <strong className="negative">
+                  -
                   {selectedProduct.price.toLocaleString(
                     'pt-BR'
                   )}{' '}
@@ -578,10 +713,9 @@ export function ShopPage() {
                 </strong>
               </div>
 
-              <div className="purchase-result">
+              <div className="store-purchase-total">
                 <span>
-                  Saldo após
-                  a compra
+                  Saldo restante
                 </span>
 
                 <strong>
@@ -594,30 +728,32 @@ export function ShopPage() {
                   BP
                 </strong>
               </div>
+
             </div>
 
             {selectedProduct.stock !==
               null && (
-              <div className="purchase-stock">
+              <div className="store-purchase-stock">
                 {selectedProduct.stock >
                 0
-                  ? `Restam ${selectedProduct.stock} ${
+                  ? `${selectedProduct.stock} ${
                       selectedProduct.stock ===
                       1
-                        ? 'unidade'
-                        : 'unidades'
+                        ? 'unidade disponível'
+                        : 'unidades disponíveis'
                     }`
                   : 'Produto esgotado'}
               </div>
             )}
 
             {errorMessage && (
-              <div className="purchase-error">
+              <div className="store-purchase-error">
                 {errorMessage}
               </div>
             )}
 
-            <div className="purchase-actions">
+            <div className="store-purchase-actions">
+
               <button
                 className="btn"
                 type="button"
@@ -650,24 +786,25 @@ export function ShopPage() {
                 }
               >
                 {buying
-                  ? 'Processando compra...'
-                  : `Confirmar compra • ${selectedProduct.price.toLocaleString(
+                  ? 'Processando...'
+                  : `Confirmar • ${selectedProduct.price.toLocaleString(
                       'pt-BR'
                     )} BP`}
               </button>
+
             </div>
+
           </div>
         </div>
       )}
 
       <ToastContainer
-        toasts={
-          toasts
-        }
+        toasts={toasts}
         onClose={
           removeToast
         }
       />
+
     </main>
   )
 }

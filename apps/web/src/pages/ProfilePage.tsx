@@ -2,12 +2,21 @@ import {
   CalendarDays,
   Coins,
   History,
+  IdCard,
   Receipt,
   ShieldCheck,
   ShoppingBag,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
-import { API_URL } from '../lib'
+
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
+import {
+  API_URL,
+} from '../lib'
 
 type Purchase = {
   id: number
@@ -43,11 +52,24 @@ type Profile = {
 }
 
 export function ProfilePage() {
-  const [profile, setProfile] =
-    useState<Profile | null | undefined>(undefined)
+  const [
+    profile,
+    setProfile,
+  ] =
+    useState<
+      Profile |
+      null |
+      undefined
+    >(undefined)
 
-  const [error, setError] =
-    useState<string | null>(null)
+  const [
+    error,
+    setError,
+  ] =
+    useState<
+      string |
+      null
+    >(null)
 
   useEffect(() => {
     void loadProfile()
@@ -57,19 +79,26 @@ export function ProfilePage() {
     try {
       setError(null)
 
-      const response = await fetch(
-        `${API_URL}/api/auth/profile`,
-        {
-          credentials: 'include',
-        }
-      )
+      const response =
+        await fetch(
+          `${API_URL}/api/auth/profile`,
+          {
+            credentials:
+              'include',
+          }
+        )
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         setProfile(null)
+
         return
       }
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
         throw new Error(
@@ -92,78 +121,142 @@ export function ProfilePage() {
     }
   }
 
-  const totalSpent = useMemo(() => {
-    if (!profile) return 0
-
-    return profile.purchases
-      .filter(
-        (purchase) =>
-          purchase.status === 'COMPLETED'
-      )
-      .reduce(
-        (total, purchase) =>
-          total + purchase.price,
-        0
-      )
-  }, [profile])
-
-  function formatDate(value: string) {
-    return new Intl.DateTimeFormat(
-      'pt-BR',
-      {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+  const totalSpent =
+    useMemo(() => {
+      if (!profile) {
+        return 0
       }
-    ).format(new Date(value))
+
+      return profile.purchases
+        .filter(
+          (purchase) =>
+            purchase.status ===
+            'COMPLETED'
+        )
+        .reduce(
+          (
+            total,
+            purchase
+          ) =>
+            total +
+            purchase.price,
+          0
+        )
+    }, [profile])
+
+  function formatDate(
+    value: string
+  ) {
+    return new Intl
+      .DateTimeFormat(
+        'pt-BR',
+        {
+          day:
+            '2-digit',
+
+          month:
+            '2-digit',
+
+          year:
+            'numeric',
+
+          hour:
+            '2-digit',
+
+          minute:
+            '2-digit',
+        }
+      )
+      .format(
+        new Date(value)
+      )
   }
 
-  function formatShortDate(value: string) {
-    return new Intl.DateTimeFormat(
-      'pt-BR',
-      {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }
-    ).format(new Date(value))
+  function formatShortDate(
+    value: string
+  ) {
+    return new Intl
+      .DateTimeFormat(
+        'pt-BR',
+        {
+          day:
+            '2-digit',
+
+          month:
+            'long',
+
+          year:
+            'numeric',
+        }
+      )
+      .format(
+        new Date(value)
+      )
   }
 
-  function roleLabel(role: string) {
-    if (role === 'ADMIN') {
+  function roleLabel(
+    role: string
+  ) {
+    if (
+      role === 'ADMIN'
+    ) {
       return 'Administrador'
     }
 
-    if (role === 'MODERATOR') {
+    if (
+      role ===
+      'MODERATOR'
+    ) {
       return 'Moderador'
     }
 
-    return 'Membro'
+    return 'Aluno'
   }
 
-  if (profile === undefined) {
+  if (
+    profile === undefined
+  ) {
     return (
-      <main className="page">
-        <p>Carregando perfil...</p>
+      <main className="student-page">
+        <div className="student-loading">
+          <div className="student-loading-emblem">
+            B
+          </div>
+
+          <p>
+            Carregando registro
+            acadêmico...
+          </p>
+        </div>
       </main>
     )
   }
 
   if (!profile) {
     return (
-      <main className="page centered">
-        <div className="paper-card locked-card">
-          <ShieldCheck size={42} />
+      <main className="student-page student-page-centered">
+        <section className="student-login-card">
+          <div className="student-login-emblem">
+            <ShieldCheck
+              size={36}
+            />
+          </div>
+
+          <p className="eyebrow">
+            BULLWORTH ACADEMY
+          </p>
 
           <h1>
-            Faça login para acessar seu perfil
+            Student Record
           </h1>
 
           <p>
-            Entre com sua conta do Discord para
-            acessar seu saldo, compras e histórico.
+            Entre com sua conta
+            do Discord para
+            acessar seu registro,
+            saldo, compras e
+            histórico dentro da
+            academia.
           </p>
 
           <a
@@ -174,201 +267,340 @@ export function ProfilePage() {
           </a>
 
           {error && (
-            <div className="admin-error">
+            <div className="student-login-error">
               {error}
             </div>
           )}
-        </div>
+        </section>
       </main>
     )
   }
 
   return (
-    <main className="page">
-      <section className="profile-hero paper-card">
-        <div className="profile-main">
-          {profile.avatar ? (
-            <img
-              src={profile.avatar}
-              alt={profile.username}
-              className="profile-avatar"
-            />
-          ) : (
-            <div className="profile-avatar profile-avatar-placeholder">
-              {profile.username
-                .charAt(0)
-                .toUpperCase()}
-            </div>
-          )}
+    <main className="student-page">
 
-          <div className="profile-identity">
-            <p className="eyebrow">
-              ALUNO DE BULLWORTH
-            </p>
+      <section className="student-record">
 
-            <h1>
-              {profile.username}
-            </h1>
+        <div className="student-record-sidebar">
 
-            <div className="profile-meta">
-              <span>
-                {roleLabel(profile.role)}
-              </span>
-
-              <span>
-                •
-              </span>
-
-              <span>
-                ID Discord: {profile.discordId}
-              </span>
-            </div>
+          <div className="student-record-seal">
+            <span>
+              B
+            </span>
           </div>
-        </div>
 
-        <div className="profile-balance">
-          <Coins size={22} />
-
-          <span>
-            Saldo disponível
-          </span>
-
-          <strong>
-            {profile.bullyPoints.toLocaleString(
-              'pt-BR'
-            )}{' '}
-            BP
-          </strong>
-        </div>
-      </section>
-
-      <section className="profile-stats">
-        <div className="stat paper-card">
-          <Coins size={22} />
-
-          <span>
-            Saldo atual
-          </span>
-
-          <strong>
-            {profile.bullyPoints.toLocaleString(
-              'pt-BR'
+          <div className="student-avatar-wrap">
+            {profile.avatar ? (
+              <img
+                src={
+                  profile.avatar
+                }
+                alt={
+                  profile.username
+                }
+                className="student-avatar"
+              />
+            ) : (
+              <div className="student-avatar student-avatar-placeholder">
+                {profile.username
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
             )}
-          </strong>
+          </div>
 
-          <small>
-            Bully Points
-          </small>
+          <div className="student-sidebar-name">
+            <small>
+              STUDENT
+            </small>
+
+            <strong>
+              {profile.username}
+            </strong>
+          </div>
+
+          <div className="student-sidebar-divider" />
+
+          <dl className="student-sidebar-data">
+            <div>
+              <dt>
+                Função
+              </dt>
+
+              <dd>
+                {roleLabel(
+                  profile.role
+                )}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Discord ID
+              </dt>
+
+              <dd>
+                {profile.discordId}
+              </dd>
+            </div>
+
+            <div>
+              <dt>
+                Registro
+              </dt>
+
+              <dd>
+                #{String(
+                  profile.id
+                ).padStart(
+                  4,
+                  '0'
+                )}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="student-sidebar-footer">
+            BULLWORTH ACADEMY
+            <span>
+              THE GOLDEN YEARS
+            </span>
+          </div>
+
         </div>
 
-        <div className="stat paper-card">
-          <ShoppingBag size={22} />
+        <div className="student-record-main">
 
-          <span>
-            Compras
-          </span>
-
-          <strong>
-            {profile.purchases.length}
-          </strong>
-
-          <small>
-            realizadas
-          </small>
-        </div>
-
-        <div className="stat paper-card">
-          <Receipt size={22} />
-
-          <span>
-            BP gastos
-          </span>
-
-          <strong>
-            {totalSpent.toLocaleString(
-              'pt-BR'
-            )}
-          </strong>
-
-          <small>
-            em compras
-          </small>
-        </div>
-
-        <div className="stat paper-card">
-          <CalendarDays size={22} />
-
-          <span>
-            Membro desde
-          </span>
-
-          <strong className="profile-date-stat">
-            {formatShortDate(
-              profile.createdAt
-            )}
-          </strong>
-
-          <small>
-            no site
-          </small>
-        </div>
-      </section>
-
-      <section className="profile-columns">
-        <div className="paper-card profile-section">
-          <div className="profile-section-header">
+          <header className="student-record-header">
             <div>
               <p className="eyebrow">
-                COMPRAS
+                OFFICIAL STUDENT RECORD
               </p>
 
-              <h2>
-                Histórico de compras
-              </h2>
+              <h1>
+                {profile.username}
+              </h1>
+
+              <p className="student-record-subtitle">
+                Registro individual
+                do aluno • Bullworth
+                Academy
+              </p>
             </div>
 
-            <ShoppingBag size={24} />
+            <div className="student-status">
+              <span>
+                STATUS
+              </span>
+
+              <strong>
+                ATIVO
+              </strong>
+            </div>
+          </header>
+
+          <div className="student-gold-rule" />
+
+          <section className="student-balance-panel">
+
+            <div className="student-balance-icon">
+              <Coins
+                size={26}
+              />
+            </div>
+
+            <div>
+              <span>
+                Bully Points
+              </span>
+
+              <strong>
+                {profile.bullyPoints.toLocaleString(
+                  'pt-BR'
+                )}{' '}
+                BP
+              </strong>
+            </div>
+
+            <p>
+              Saldo disponível
+              para uso na
+              Bullworth Store.
+            </p>
+
+          </section>
+
+          <section className="student-stat-grid">
+
+            <article className="student-stat-card">
+              <ShoppingBag
+                size={21}
+              />
+
+              <span>
+                Compras
+              </span>
+
+              <strong>
+                {profile.purchases.length}
+              </strong>
+
+              <small>
+                realizadas
+              </small>
+            </article>
+
+            <article className="student-stat-card">
+              <Receipt
+                size={21}
+              />
+
+              <span>
+                BP gastos
+              </span>
+
+              <strong>
+                {totalSpent.toLocaleString(
+                  'pt-BR'
+                )}
+              </strong>
+
+              <small>
+                em compras
+              </small>
+            </article>
+
+            <article className="student-stat-card">
+              <History
+                size={21}
+              />
+
+              <span>
+                Movimentações
+              </span>
+
+              <strong>
+                {profile.transactions.length}
+              </strong>
+
+              <small>
+                registradas
+              </small>
+            </article>
+
+            <article className="student-stat-card student-stat-card-date">
+              <CalendarDays
+                size={21}
+              />
+
+              <span>
+                Membro desde
+              </span>
+
+              <strong>
+                {formatShortDate(
+                  profile.createdAt
+                )}
+              </strong>
+
+              <small>
+                na academia
+              </small>
+            </article>
+
+          </section>
+
+        </div>
+
+      </section>
+
+      <section className="student-content-grid">
+
+        <article className="student-panel">
+
+          <div className="student-panel-header">
+
+            <div className="student-panel-title">
+              <div className="student-panel-icon">
+                <ShoppingBag
+                  size={20}
+                />
+              </div>
+
+              <div>
+                <p className="eyebrow">
+                  SCHOOL STORE
+                </p>
+
+                <h2>
+                  Histórico de compras
+                </h2>
+              </div>
+            </div>
+
+            <span className="student-panel-count">
+              {profile.purchases.length}
+            </span>
+
           </div>
 
-          {profile.purchases.length === 0 ? (
-            <div className="profile-empty">
-              <ShoppingBag size={36} />
+          {profile.purchases.length ===
+          0 ? (
+            <div className="student-empty">
+              <ShoppingBag
+                size={34}
+              />
+
+              <strong>
+                Nenhuma compra
+              </strong>
 
               <p>
-                Você ainda não realizou nenhuma compra.
+                Os itens adquiridos
+                na Bullworth Store
+                aparecerão aqui.
               </p>
             </div>
           ) : (
-            <div className="profile-purchase-list">
+            <div className="student-list">
               {profile.purchases.map(
-                (purchase) => (
+                (
+                  purchase
+                ) => (
                   <article
-                    className="profile-purchase-item"
-                    key={purchase.id}
+                    className="student-list-item"
+                    key={
+                      purchase.id
+                    }
                   >
-                    <div className="profile-purchase-image">
-                      {purchase.product
+                    <div className="student-list-image">
+                      {purchase
+                        .product
                         .imageUrl ? (
                         <img
                           src={
-                            purchase.product
+                            purchase
+                              .product
                               .imageUrl
                           }
                           alt={
-                            purchase.product.name
+                            purchase
+                              .product
+                              .name
                           }
                         />
                       ) : (
                         <ShoppingBag
-                          size={24}
+                          size={20}
                         />
                       )}
                     </div>
 
-                    <div className="profile-purchase-info">
+                    <div className="student-list-copy">
                       <strong>
                         {
-                          purchase.product
+                          purchase
+                            .product
                             .name
                         }
                       </strong>
@@ -380,8 +612,8 @@ export function ProfilePage() {
                       </span>
                     </div>
 
-                    <div className="profile-purchase-price">
-                      -{' '}
+                    <div className="student-list-value negative">
+                      -
                       {purchase.price.toLocaleString(
                         'pt-BR'
                       )}{' '}
@@ -392,46 +624,78 @@ export function ProfilePage() {
               )}
             </div>
           )}
-        </div>
 
-        <div className="paper-card profile-section">
-          <div className="profile-section-header">
-            <div>
-              <p className="eyebrow">
-                EXTRATO
-              </p>
+        </article>
 
-              <h2>
-                Movimentações de BP
-              </h2>
+        <article className="student-panel">
+
+          <div className="student-panel-header">
+
+            <div className="student-panel-title">
+              <div className="student-panel-icon">
+                <History
+                  size={20}
+                />
+              </div>
+
+              <div>
+                <p className="eyebrow">
+                  ACCOUNT LEDGER
+                </p>
+
+                <h2>
+                  Extrato de BP
+                </h2>
+              </div>
             </div>
 
-            <History size={24} />
+            <span className="student-panel-count">
+              {profile.transactions.length}
+            </span>
+
           </div>
 
-          {profile.transactions.length === 0 ? (
-            <div className="profile-empty">
-              <History size={36} />
+          {profile.transactions.length ===
+          0 ? (
+            <div className="student-empty">
+              <History
+                size={34}
+              />
+
+              <strong>
+                Nenhuma movimentação
+              </strong>
 
               <p>
-                Nenhuma movimentação registrada.
+                Entradas e saídas
+                de Bully Points
+                aparecerão aqui.
               </p>
             </div>
           ) : (
-            <div className="transaction-list">
+            <div className="student-list">
               {profile.transactions.map(
-                (transaction) => {
+                (
+                  transaction
+                ) => {
                   const positive =
-                    transaction.amount > 0
+                    transaction.amount >
+                    0
 
                   return (
-                    <div
-                      className="transaction-item"
+                    <article
+                      className="student-list-item"
                       key={
                         transaction.id
                       }
                     >
-                      <div>
+                      <div className="student-list-icon">
+                        <IdCard
+                          size={19}
+                        />
+                      </div>
+
+                      <div className="student-list-copy">
                         <strong>
                           {
                             transaction.reason
@@ -446,7 +710,7 @@ export function ProfilePage() {
                       </div>
 
                       <div
-                        className={`transaction-amount ${
+                        className={`student-list-value ${
                           positive
                             ? 'positive'
                             : 'negative'
@@ -455,19 +719,37 @@ export function ProfilePage() {
                         {positive
                           ? '+'
                           : ''}
+
                         {transaction.amount.toLocaleString(
                           'pt-BR'
                         )}{' '}
                         BP
                       </div>
-                    </div>
+                    </article>
                   )
                 }
               )}
             </div>
           )}
-        </div>
+
+        </article>
+
       </section>
+
+      <footer className="student-record-footer">
+        <span>
+          BULLWORTH ACADEMY
+        </span>
+
+        <span>
+          STUDENT SERVICES
+        </span>
+
+        <span>
+          THE GOLDEN YEARS — 2000s
+        </span>
+      </footer>
+
     </main>
   )
 }

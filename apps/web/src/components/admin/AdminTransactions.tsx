@@ -3,76 +3,120 @@ import {
   ArrowUpCircle,
   History,
 } from 'lucide-react'
-import type { PointTransaction } from './types'
+
+import type {
+  PointTransaction,
+} from './types'
 
 type Props = {
-  transactions: PointTransaction[]
+  transactions:
+    PointTransaction[]
+
   loading: boolean
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat(
-    'pt-BR',
-    {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }
-  ).format(new Date(value))
+function formatDate(
+  value: string
+) {
+  return new Intl
+    .DateTimeFormat(
+      'pt-BR',
+      {
+        day:
+          '2-digit',
+
+        month:
+          '2-digit',
+
+        year:
+          'numeric',
+
+        hour:
+          '2-digit',
+
+        minute:
+          '2-digit',
+      }
+    )
+    .format(
+      new Date(value)
+    )
 }
 
 export function AdminTransactions({
   transactions,
   loading,
 }: Props) {
-  if (loading) {
-    return (
-      <section className="paper-card admin-section">
-        <p>Carregando movimentações...</p>
-      </section>
-    )
-  }
-
   return (
-    <section className="paper-card admin-section">
-      <div className="admin-section-heading">
+    <section className="admin-audit-panel">
+
+      <header className="admin-audit-header">
+
         <div>
           <p className="eyebrow">
-            AUDITORIA
+            ACCOUNT LEDGER
           </p>
 
           <h2>
             Movimentações de Bully Points
           </h2>
-        </div>
-
-        <History size={24} />
-      </div>
-
-      {transactions.length === 0 ? (
-        <div className="admin-empty">
-          <History size={40} />
 
           <p>
-            Nenhuma movimentação registrada.
+            Auditoria das entradas
+            e saídas da economia
+            da academia.
+          </p>
+        </div>
+
+        <div className="admin-audit-header-icon">
+          <History
+            size={23}
+          />
+        </div>
+
+      </header>
+
+      {loading ? (
+        <div className="admin-audit-state">
+          Carregando movimentações...
+        </div>
+      ) : transactions.length ===
+        0 ? (
+        <div className="admin-audit-empty">
+          <History
+            size={36}
+          />
+
+          <strong>
+            Nenhuma movimentação
+          </strong>
+
+          <p>
+            Alterações de Bully Points
+            serão registradas aqui.
           </p>
         </div>
       ) : (
-        <div className="admin-transaction-list">
+        <div className="admin-ledger-list">
+
           {transactions.map(
-            (transaction) => {
+            (
+              transaction
+            ) => {
               const positive =
-                transaction.amount > 0
+                transaction.amount >
+                0
 
               return (
                 <article
-                  className="admin-transaction-item"
-                  key={transaction.id}
+                  className="admin-ledger-row"
+                  key={
+                    transaction.id
+                  }
                 >
+
                   <div
-                    className={`transaction-icon ${
+                    className={`admin-ledger-icon ${
                       positive
                         ? 'credit'
                         : 'debit'
@@ -89,13 +133,49 @@ export function AdminTransactions({
                     )}
                   </div>
 
-                  <div className="transaction-main">
-                    <strong>
-                      {transaction.user.username}
-                    </strong>
+                  <div className="admin-ledger-main">
+
+                    <div className="admin-ledger-user">
+                      {transaction
+                        .user
+                        .avatar ? (
+                        <img
+                          src={
+                            transaction
+                              .user
+                              .avatar
+                          }
+                          alt={
+                            transaction
+                              .user
+                              .username
+                          }
+                        />
+                      ) : (
+                        <div className="admin-ledger-avatar-placeholder">
+                          {transaction
+                            .user
+                            .username
+                            .charAt(
+                              0
+                            )
+                            .toUpperCase()}
+                        </div>
+                      )}
+
+                      <strong>
+                        {
+                          transaction
+                            .user
+                            .username
+                        }
+                      </strong>
+                    </div>
 
                     <span>
-                      {transaction.reason}
+                      {
+                        transaction.reason
+                      }
                     </span>
 
                     <small>
@@ -103,40 +183,48 @@ export function AdminTransactions({
                         transaction.createdAt
                       )}
                     </small>
+
                   </div>
 
-                  <div className="transaction-admin">
+                  <div className="admin-ledger-responsible">
                     <span>
-                      Responsável
+                      RESPONSÁVEL
                     </span>
 
                     <strong>
                       {transaction.admin
-                        ? transaction.admin
+                        ? transaction
+                            .admin
                             .username
                         : 'Sistema'}
                     </strong>
                   </div>
 
                   <div
-                    className={`transaction-value ${
+                    className={`admin-ledger-value ${
                       positive
                         ? 'positive'
                         : 'negative'
                     }`}
                   >
-                    {positive ? '+' : ''}
+                    {positive
+                      ? '+'
+                      : ''}
+
                     {transaction.amount.toLocaleString(
                       'pt-BR'
                     )}{' '}
                     BP
                   </div>
+
                 </article>
               )
             }
           )}
+
         </div>
       )}
+
     </section>
   )
 }

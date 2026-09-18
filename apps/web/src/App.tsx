@@ -1,21 +1,101 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { Navbar } from './components/Navbar'
-import { HomePage } from './pages/HomePage'
-import { ShopPage } from './pages/ShopPage'
-import { AdminPage } from './pages/AdminPage'
-import { ProfilePage } from './pages/ProfilePage'
+import {
+  useEffect,
+  useState,
+} from 'react'
 
-export default function App() {
+import {
+  Route,
+  Routes,
+} from 'react-router-dom'
+
+import {
+  Header,
+} from './components/Navbar'
+
+import {
+  AdminPage,
+} from './pages/AdminPage'
+
+import {
+  HomePage,
+} from './pages/HomePage'
+
+import {
+  ProfilePage,
+} from './pages/ProfilePage'
+
+import {
+  ShopPage,
+} from './pages/ShopPage'
+
+import {
+  getMe,
+  type User,
+} from './lib'
+
+export function App() {
+  const [
+    user,
+    setUser,
+  ] =
+    useState<
+      User |
+      null |
+      undefined
+    >(undefined)
+
+  useEffect(() => {
+    void loadUser()
+  }, [])
+
+  async function loadUser() {
+    try {
+      const currentUser =
+        await getMe()
+
+      setUser(
+        currentUser
+      )
+    } catch {
+      setUser(null)
+    }
+  }
+
   return (
-    <div className="app-shell">
-      <Navbar />
+    <>
+      <Header
+        user={user ?? null}
+      />
+
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/loja" element={<ShopPage />} />
-        <Route path="/perfil" element={<ProfilePage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/"
+          element={
+            <HomePage />
+          }
+        />
+
+        <Route
+          path="/loja"
+          element={
+            <ShopPage />
+          }
+        />
+
+        <Route
+          path="/perfil"
+          element={
+            <ProfilePage />
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminPage />
+          }
+        />
       </Routes>
-    </div>
+    </>
   )
 }

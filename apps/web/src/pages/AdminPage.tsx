@@ -6,6 +6,7 @@ import {
   Pencil,
   Plus,
   ReceiptText,
+  Shield,
   ShieldAlert,
   Users,
   X,
@@ -18,6 +19,7 @@ import {
 } from 'react'
 
 import {
+  API_URL,
   getMe,
   type User,
 } from '../lib'
@@ -89,10 +91,6 @@ type AdminTab =
   | 'purchases'
   | 'transactions'
 
-const API_URL =
-  import.meta.env.VITE_API_URL ??
-  'http://localhost:3001'
-
 const EMPTY_PRODUCT_FORM: ProductForm = {
   name: '',
   description: '',
@@ -102,15 +100,19 @@ const EMPTY_PRODUCT_FORM: ProductForm = {
 }
 
 export function AdminPage() {
-  const [user, setUser] =
-    useState<
-      User |
-      null |
-      undefined
-    >(undefined)
+  const [
+    user,
+    setUser,
+  ] = useState<
+    User |
+    null |
+    undefined
+  >(undefined)
 
-  const [users, setUsers] =
-    useState<AdminUser[]>([])
+  const [
+    users,
+    setUsers,
+  ] = useState<AdminUser[]>([])
 
   const [
     loadingUsers,
@@ -148,14 +150,17 @@ export function AdminPage() {
     setDashboard,
   ] =
     useState<
-      DashboardData | null
+      DashboardData |
+      null
     >(null)
 
   const [
     purchases,
     setPurchases,
   ] =
-    useState<Purchase[]>([])
+    useState<
+      Purchase[]
+    >([])
 
   const [
     transactions,
@@ -179,9 +184,10 @@ export function AdminPage() {
     editingProduct,
     setEditingProduct,
   ] =
-    useState<Product | null>(
+    useState<
+      Product |
       null
-    )
+    >(null)
 
   const [
     productForm,
@@ -200,9 +206,10 @@ export function AdminPage() {
     productToToggle,
     setProductToToggle,
   ] =
-    useState<Product | null>(
+    useState<
+      Product |
       null
-    )
+    >(null)
 
   const [
     togglingProduct,
@@ -540,18 +547,16 @@ export function AdminPage() {
             },
 
             body:
-              JSON.stringify(
-                {
-                  name,
-                  description,
-                  price,
-                  stock,
+              JSON.stringify({
+                name,
+                description,
+                price,
+                stock,
 
-                  imageUrl:
-                    productForm.imageUrl.trim() ||
-                    null,
-                }
-              ),
+                imageUrl:
+                  productForm.imageUrl.trim() ||
+                  null,
+              }),
           }
         )
 
@@ -692,9 +697,15 @@ export function AdminPage() {
     user === undefined
   ) {
     return (
-      <main className="page">
+      <main className="admin-page admin-loading-page">
+        <div className="admin-loading-seal">
+          <Shield
+            size={28}
+          />
+        </div>
+
         <p>
-          Carregando...
+          Abrindo o escritório da diretoria...
         </p>
       </main>
     )
@@ -705,41 +716,73 @@ export function AdminPage() {
     user.role !== 'ADMIN'
   ) {
     return (
-      <main className="page centered">
-        <div className="paper-card locked-card">
-          <ShieldAlert
-            size={42}
-          />
+      <main className="page centered admin-page">
+        <section className="admin-access-denied">
+          <div className="admin-access-icon">
+            <ShieldAlert
+              size={38}
+            />
+          </div>
+
+          <p className="eyebrow">
+            BULLWORTH ACADEMY
+          </p>
 
           <h1>
-            Acesso administrativo
+            Restricted Area
           </h1>
 
           <p>
-            Esta área é restrita
-            aos administradores
-            do RP.
+            Esta área pertence ao
+            escritório da diretoria
+            e está disponível apenas
+            para administradores
+            autorizados.
           </p>
-        </div>
+        </section>
       </main>
     )
   }
 
   return (
-    <main className="page">
-      <div className="page-heading">
+    <main className="page admin-page">
+
+      <header className="page-heading admin-page-heading">
         <div>
           <p className="eyebrow">
-            ADMINISTRAÇÃO
+            BULLWORTH ACADEMY
           </p>
 
           <h1>
-            Painel da Diretoria
+            Administration
           </h1>
+
+          <p className="admin-page-subtitle">
+            Diretoria, economia e
+            controle administrativo
+            da academia.
+          </p>
         </div>
-      </div>
+
+        <div className="admin-office-seal">
+          <span>
+            B
+          </span>
+
+          <div>
+            <strong>
+              HEADMASTER OFFICE
+            </strong>
+
+            <small>
+              AUTHORIZED ACCESS
+            </small>
+          </div>
+        </div>
+      </header>
 
       <nav className="admin-tabs">
+
         <button
           type="button"
           className={
@@ -844,19 +887,44 @@ export function AdminPage() {
 
           Movimentações
         </button>
+
       </nav>
 
       {activeTab ===
         'dashboard' && (
         <>
+          <section className="admin-dashboard-intro">
+            <div>
+              <p className="eyebrow">
+                HEADMASTER OVERVIEW
+              </p>
+
+              <h2>
+                Resumo da academia
+              </h2>
+
+              <p>
+                Acompanhe usuários,
+                economia, produtos
+                e atividades recentes
+                do portal.
+              </p>
+            </div>
+
+            <span>
+              LIVE SYSTEM
+            </span>
+          </section>
+
           <div className="admin-grid">
-            <div className="stat paper-card">
+
+            <article className="stat">
               <Users
-                size={22}
+                size={23}
               />
 
               <span>
-                Usuários
+                Alunos registrados
               </span>
 
               <strong>
@@ -867,11 +935,11 @@ export function AdminPage() {
               <small>
                 membros cadastrados
               </small>
-            </div>
+            </article>
 
-            <div className="stat paper-card">
+            <article className="stat">
               <Coins
-                size={22}
+                size={23}
               />
 
               <span>
@@ -891,11 +959,11 @@ export function AdminPage() {
               <small>
                 Bully Points
               </small>
-            </div>
+            </article>
 
-            <div className="stat paper-card">
+            <article className="stat">
               <Package
-                size={22}
+                size={23}
               />
 
               <span>
@@ -909,13 +977,13 @@ export function AdminPage() {
               </strong>
 
               <small>
-                na loja
+                disponíveis na loja
               </small>
-            </div>
+            </article>
 
-            <div className="stat paper-card">
+            <article className="stat">
               <ReceiptText
-                size={22}
+                size={23}
               />
 
               <span>
@@ -929,161 +997,176 @@ export function AdminPage() {
               </strong>
 
               <small>
-                realizadas
+                transações concluídas
               </small>
-            </div>
+            </article>
+
           </div>
 
           <div className="admin-dashboard-columns">
-            <section className="paper-card dashboard-panel">
+
+            <section className="dashboard-panel">
+
               <div className="admin-section-heading">
                 <div>
                   <p className="eyebrow">
-                    RECENTES
+                    SCHOOL STORE
                   </p>
 
                   <h2>
                     Últimas compras
                   </h2>
                 </div>
+
+                <ReceiptText
+                  size={22}
+                />
               </div>
 
               {loadingAudit ? (
-                <p>
-                  Carregando...
-                </p>
+                <div className="admin-panel-state">
+                  Carregando compras...
+                </div>
               ) : purchases.length ===
                 0 ? (
-                <p>
-                  Nenhuma compra
-                  registrada.
-                </p>
+                <div className="admin-panel-state">
+                  Nenhuma compra registrada.
+                </div>
               ) : (
-                purchases
-                  .slice(
-                    0,
-                    5
-                  )
-                  .map(
-                    (
-                      purchase
-                    ) => (
-                      <div
-                        className="dashboard-activity"
-                        key={
-                          purchase.id
-                        }
-                      >
-                        <div>
-                          <strong>
-                            {
-                              purchase
-                                .user
-                                .username
-                            }
-                          </strong>
-
-                          <span>
-                            {
-                              purchase
-                                .product
-                                .name
-                            }
-                          </span>
-                        </div>
-
-                        <strong>
-                          {purchase.price.toLocaleString(
-                            'pt-BR'
-                          )}{' '}
-                          BP
-                        </strong>
-                      </div>
+                <div className="admin-activity-list">
+                  {purchases
+                    .slice(
+                      0,
+                      5
                     )
-                  )
+                    .map(
+                      (
+                        purchase
+                      ) => (
+                        <div
+                          className="dashboard-activity"
+                          key={
+                            purchase.id
+                          }
+                        >
+                          <div>
+                            <strong>
+                              {
+                                purchase
+                                  .user
+                                  .username
+                              }
+                            </strong>
+
+                            <span>
+                              {
+                                purchase
+                                  .product
+                                  .name
+                              }
+                            </span>
+                          </div>
+
+                          <strong>
+                            {purchase.price.toLocaleString(
+                              'pt-BR'
+                            )}{' '}
+                            BP
+                          </strong>
+                        </div>
+                      )
+                    )}
+                </div>
               )}
+
             </section>
 
-            <section className="paper-card dashboard-panel">
+            <section className="dashboard-panel">
+
               <div className="admin-section-heading">
                 <div>
                   <p className="eyebrow">
-                    EXTRATO
+                    ACCOUNT LEDGER
                   </p>
 
                   <h2>
-                    Últimas
-                    movimentações
+                    Últimas movimentações
                   </h2>
                 </div>
+
+                <History
+                  size={22}
+                />
               </div>
 
               {loadingAudit ? (
-                <p>
-                  Carregando...
-                </p>
+                <div className="admin-panel-state">
+                  Carregando movimentações...
+                </div>
               ) : transactions.length ===
                 0 ? (
-                <p>
-                  Nenhuma
-                  movimentação
-                  registrada.
-                </p>
+                <div className="admin-panel-state">
+                  Nenhuma movimentação registrada.
+                </div>
               ) : (
-                transactions
-                  .slice(
-                    0,
-                    5
-                  )
-                  .map(
-                    (
-                      transaction
-                    ) => (
-                      <div
-                        className="dashboard-activity"
-                        key={
-                          transaction.id
-                        }
-                      >
-                        <div>
-                          <strong>
-                            {
-                              transaction
-                                .user
-                                .username
-                            }
-                          </strong>
-
-                          <span>
-                            {
-                              transaction.reason
-                            }
-                          </span>
-                        </div>
-
-                        <strong
-                          className={
-                            transaction.amount >
-                            0
-                              ? 'positive'
-                              : 'negative'
+                <div className="admin-activity-list">
+                  {transactions
+                    .slice(
+                      0,
+                      5
+                    )
+                    .map(
+                      (
+                        transaction
+                      ) => (
+                        <div
+                          className="dashboard-activity"
+                          key={
+                            transaction.id
                           }
                         >
-                          {transaction.amount >
-                          0
-                            ? '+'
-                            : ''}
+                          <div>
+                            <strong>
+                              {
+                                transaction
+                                  .user
+                                  .username
+                              }
+                            </strong>
 
-                          {transaction.amount.toLocaleString(
-                            'pt-BR'
-                          )}{' '}
-                          BP
-                        </strong>
-                      </div>
-                    )
-                  )
+                            <span>
+                              {
+                                transaction.reason
+                              }
+                            </span>
+                          </div>
+
+                          <strong
+                            className={
+                              transaction.amount >
+                              0
+                                ? 'positive'
+                                : 'negative'
+                            }
+                          >
+                            {transaction.amount >
+                            0
+                              ? '+'
+                              : ''}
+
+                            {transaction.amount.toLocaleString(
+                              'pt-BR'
+                            )}{' '}
+                            BP
+                          </strong>
+                        </div>
+                      )
+                    )}
+                </div>
               )}
+
             </section>
+
           </div>
         </>
       )}
@@ -1108,16 +1191,22 @@ export function AdminPage() {
 
       {activeTab ===
         'products' && (
-        <section className="paper-card admin-products-section">
-          <div className="admin-products-header">
+        <section className="admin-products-section">
+
+          <header className="admin-products-header">
             <div>
               <p className="eyebrow">
-                LOJA
+                BULLWORTH STORE
               </p>
 
               <h2>
                 Gerenciar produtos
               </h2>
+
+              <p className="admin-section-description">
+                Controle os itens disponíveis
+                para os alunos.
+              </p>
             </div>
 
             <button
@@ -1133,122 +1222,115 @@ export function AdminPage() {
 
               Novo produto
             </button>
-          </div>
+          </header>
 
           {loadingProducts ? (
-            <p>
-              Carregando
-              produtos...
-            </p>
+            <div className="admin-panel-state">
+              Carregando produtos...
+            </div>
           ) : products.length ===
             0 ? (
-            <p>
-              Nenhum produto
-              cadastrado.
-            </p>
+            <div className="admin-panel-state">
+              Nenhum produto cadastrado.
+            </div>
           ) : (
             <div className="admin-product-list">
+
               {products.map(
                 (product) => (
-                  <div
+                  <article
                     className="admin-product-row"
                     key={
                       product.id
                     }
                   >
-                    <div className="admin-product-image">
-                      {product.imageUrl ? (
-                        <img
-                          src={
-                            product.imageUrl
+                    <div className="admin-product-main">
+                      <div className="admin-product-image">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                          />
+                        ) : (
+                          <Package size={26} />
+                        )}
+                      </div>
+
+                      <div className="admin-product-info">
+                        <div className="admin-product-heading">
+                          <strong>{product.name}</strong>
+
+                          <span
+                            className={`admin-product-status ${
+                              product.active
+                                ? 'active'
+                                : 'inactive'
+                            }`}
+                          >
+                            {product.active
+                              ? 'ATIVO'
+                              : 'INATIVO'}
+                          </span>
+                        </div>
+
+                        <p>{product.description}</p>
+
+                        <small>
+                          {product.stock === null
+                            ? 'Estoque ilimitado'
+                            : `Estoque: ${product.stock}`}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div className="admin-product-side">
+                      <div className="admin-product-price">
+                        <small>PREÇO</small>
+
+                        <strong>
+                          {product.price.toLocaleString(
+                            'pt-BR'
+                          )}{' '}
+                          BP
+                        </strong>
+                      </div>
+
+                      <div className="admin-product-actions">
+                        <button
+                          type="button"
+                          className="admin-action edit"
+                          onClick={() =>
+                            openEditProduct(product)
                           }
-                          alt={
-                            product.name
+                        >
+                          <Pencil size={16} />
+                          Editar
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`admin-action ${
+                            product.active
+                              ? 'remove'
+                              : 'add'
+                          }`}
+                          onClick={() =>
+                            setProductToToggle(product)
                           }
-                        />
-                      ) : (
-                        <span>
-                          Sem imagem
-                        </span>
-                      )}
+                        >
+                          {product.active
+                            ? 'Desativar'
+                            : 'Ativar'}
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="admin-product-info">
-                      <strong>
-                        {
-                          product.name
-                        }
-                      </strong>
-
-                      <p>
-                        {
-                          product.description
-                        }
-                      </p>
-
-                      <small>
-                        {product.stock ===
-                        null
-                          ? 'Estoque ilimitado'
-                          : `Estoque: ${product.stock}`}
-                      </small>
-                    </div>
-
-                    <div className="admin-product-price">
-                      <strong>
-                        {product.price.toLocaleString(
-                          'pt-BR'
-                        )}{' '}
-                        BP
-                      </strong>
-
-                      <span>
-                        {product.active
-                          ? 'Ativo'
-                          : 'Inativo'}
-                      </span>
-                    </div>
-
-                    <div className="admin-product-actions">
-                      <button
-                        type="button"
-                        className="admin-action edit"
-                        onClick={() =>
-                          openEditProduct(
-                            product
-                          )
-                        }
-                      >
-                        <Pencil
-                          size={16}
-                        />
-
-                        Editar
-                      </button>
-
-                      <button
-                        type="button"
-                        className={`admin-action ${
-                          product.active
-                            ? 'remove'
-                            : 'add'
-                        }`}
-                        onClick={() =>
-                          setProductToToggle(
-                            product
-                          )
-                        }
-                      >
-                        {product.active
-                          ? 'Desativar'
-                          : 'Ativar'}
-                      </button>
-                    </div>
-                  </div>
+                  </article>
                 )
               )}
+
             </div>
           )}
+
         </section>
       )}
 
@@ -1284,19 +1366,20 @@ export function AdminPage() {
           }
         >
           <div
-            className="product-modal paper-card"
+            className="product-modal admin-product-modal"
             onMouseDown={(
               event
             ) =>
               event.stopPropagation()
             }
           >
-            <div className="product-modal-header">
+
+            <header className="product-modal-header">
               <div>
                 <p className="eyebrow">
                   {editingProduct
-                    ? 'EDITAR'
-                    : 'NOVO ITEM'}
+                    ? 'PRODUCT RECORD'
+                    : 'NEW STORE ITEM'}
                 </p>
 
                 <h2>
@@ -1317,12 +1400,13 @@ export function AdminPage() {
                 }
               >
                 <X
-                  size={24}
+                  size={22}
                 />
               </button>
-            </div>
+            </header>
 
             <div className="product-form">
+
               <label>
                 Nome
 
@@ -1380,6 +1464,7 @@ export function AdminPage() {
               </label>
 
               <div className="product-form-row">
+
                 <label>
                   Preço em BP
 
@@ -1439,6 +1524,7 @@ export function AdminPage() {
                     placeholder="Vazio = ilimitado"
                   />
                 </label>
+
               </div>
 
               <label>
@@ -1497,6 +1583,7 @@ export function AdminPage() {
               )}
 
               <div className="product-modal-actions">
+
                 <button
                   type="button"
                   className="btn"
@@ -1526,8 +1613,11 @@ export function AdminPage() {
                       ? 'Salvar alterações'
                       : 'Cadastrar produto'}
                 </button>
+
               </div>
+
             </div>
+
           </div>
         </div>
       )}
@@ -1545,8 +1635,8 @@ export function AdminPage() {
         message={
           productToToggle
             ? productToToggle.active
-              ? `Deseja retirar "${productToToggle.name}" da loja? Os jogadores não poderão comprá-lo enquanto estiver desativado.`
-              : `Deseja disponibilizar "${productToToggle.name}" novamente na loja?`
+              ? `Deseja retirar "${productToToggle.name}" da Bullworth Store?`
+              : `Deseja disponibilizar "${productToToggle.name}" novamente na Bullworth Store?`
             : ''
         }
         confirmLabel={
@@ -1581,6 +1671,7 @@ export function AdminPage() {
           removeToast
         }
       />
+
     </main>
   )
 }
