@@ -1,0 +1,10 @@
+{
+  "name": "bully-rp-site",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:web": "npm run dev -w @bully-rp/web",
+    "dev:api": "npm run dev -w @bully-rp/api",
+    "build": "npm run build -w @bully-rp/web && npm run build -w @bully-rp/api"
+  }
+}

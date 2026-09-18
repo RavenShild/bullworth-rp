@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  discordId         String             @unique @db.VarChar(30)
+  username          String             @db.VarChar(100)
+  avatar            String?            @db.Text
+  bullyPoints       Int                @default(0)
+  role              UserRole           @default(MEMBER)
+  active            Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  purchases         Purchase[]
+  pointTransactions PointTransaction[] @relation("TransactionUser")
+  createdTransactions PointTransaction[] @relation("TransactionAdmin")
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(120)
+  description String     @db.Text
+  imageUrl    String?    @db.Text
+  price       Int
+  stock       Int?
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  purchases   Purchase[]
+}
+
+model Purchase {
+  id        Int            @id @default(autoincrement())
+  userId    Int
+  productId Int
+  price     Int
+  status    PurchaseStatus @default(COMPLETED)
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+  product   Product        @relation(fields: [productId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model PointTransaction {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  amount    Int
+  type      TransactionType
+  reason    String          @db.VarChar(255)
+  createdBy Int?
+  createdAt DateTime        @default(now())
+  user      User            @relation("TransactionUser", fields: [userId], references: [id])
+  admin     User?           @relation("TransactionAdmin", fields: [createdBy], references: [id])
+
+  @@index([userId])
+  @@index([createdBy])
+}
