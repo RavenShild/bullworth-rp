@@ -10,6 +10,12 @@ import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
 import adminRoutes from './routes/admin.js'
 
+import bankRoutes from './routes/bank.js'
+
+import jobRoutes from './routes/jobs.js'
+
+import socialRoutes from './routes/social.js'
+
 const app = express()
 
 const port =
@@ -171,6 +177,21 @@ app.use(
   adminRoutes
 )
 
+app.use(
+  '/api/bank',
+  bankRoutes
+)
+
+app.use(
+  '/api/jobs',
+  jobRoutes
+)
+
+app.use(
+  '/api/social',
+  socialRoutes
+)
+
 /*
  * ============================================
  * 404
@@ -226,6 +247,8 @@ app.use(
       })
   }
 )
+
+
 
 /*
  * ============================================

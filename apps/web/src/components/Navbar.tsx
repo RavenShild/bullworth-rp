@@ -5,10 +5,13 @@ import {
 
 import {
   GraduationCap,
+  Landmark,
   LogIn,
   Shield,
   ShoppingBag,
   UserRound,
+  BriefcaseBusiness,
+  Heart,
 } from 'lucide-react'
 
 import {
@@ -36,7 +39,7 @@ export function Header({
         >
           <div className="brand-mark">
             <img
-              src="https://media.discordapp.net/attachments/1519195029640318996/1550602565979218020/ICONERPG.png?ex=6aaeeeac&is=6aad9d2c&hm=b40b48cb33071ee5201c044f5a83689d8e6ace3e5966cedef27761af7651b9a1&=&format=webp&quality=lossless"
+              src="/img/ICONERPG.png"
               alt="Bullworth Academy"
               className="brand-mark-image"
             />
@@ -69,6 +72,36 @@ export function Header({
 
             Loja
           </NavLink>
+
+          {user && (
+            <NavLink to="/banco">
+              <Landmark size={17} />
+
+              Banco
+            </NavLink>
+          )}
+
+          {user && (
+            <NavLink to="/trabalho">
+              <BriefcaseBusiness
+                size={17}
+              />
+
+              Trabalho
+            </NavLink>
+          )}
+
+          {user && (
+            <NavLink
+              to="/connections"
+            >
+              <Heart
+                size={17}
+              />
+
+              Connections
+            </NavLink>
+          )}
 
           {user && (
             <NavLink

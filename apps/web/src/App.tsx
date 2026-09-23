@@ -17,6 +17,10 @@ import {
 } from './pages/AdminPage'
 
 import {
+  BankPage,
+} from './pages/BankPage'
+
+import {
   HomePage,
 } from './pages/HomePage'
 
@@ -27,6 +31,14 @@ import {
 import {
   ShopPage,
 } from './pages/ShopPage'
+
+import {
+  JobsPage,
+} from './pages/JobsPage'
+
+import {
+  SocialPage,
+} from './pages/SocialPage'
 
 import {
   getMe,
@@ -83,6 +95,20 @@ export function App() {
         />
 
         <Route
+          path="/banco"
+          element={
+            <BankPage />
+          }
+        />
+
+        <Route
+          path="/connections"
+          element={
+            <SocialPage />
+          }
+        />
+
+        <Route
           path="/perfil"
           element={
             <ProfilePage />
@@ -93,6 +119,13 @@ export function App() {
           path="/admin"
           element={
             <AdminPage />
+          }
+        />
+
+        <Route
+          path="/trabalho"
+          element={
+            <JobsPage />
           }
         />
       </Routes>
